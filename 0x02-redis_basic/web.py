@@ -20,14 +20,12 @@ def count_url_access(method):
             return cached_data.decode("utf-8")
 
         count_key = "count:" + url
-        try:
-            html = method(url)
-            store.incr(count_key)
-            store.set(cached_key, html)
-            store.expire(cached_key, 10)
-            return html
-        except requests.exceptions.RequestException as e:
-            return f"Error accessing URL: {str(e)}"
+        html = method(url)
+
+        store.incr(count_key)
+        store.set(cached_key, html)
+        store.expire(cached_key, 10)
+        return html
     return wrapper
 
 
@@ -35,5 +33,4 @@ def count_url_access(method):
 def get_page(url: str) -> str:
     """ Returns HTML content of a url """
     res = requests.get(url)
-    res.raise_for_status()
     return res.text
